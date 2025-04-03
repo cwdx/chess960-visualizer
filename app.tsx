@@ -1,11 +1,11 @@
 import { Hono } from "hono";
-import { serveStatic } from "hono/bun";
 import Page from "./page";
 import { getRandomId, validateId } from "./get-position";
 import { getCookie, setCookie } from "hono/cookie";
 import { ThemeName, themes } from "./render-board";
 import { getVideo } from "./get-video";
 import { cache } from "hono/cache";
+import { content } from "./content";
 
 const app = new Hono();
 
@@ -17,15 +17,6 @@ app.get(
   })
 );
 
-app.get("/static/*", serveStatic({}));
-app.get(
-  "/favicon.ico",
-  serveStatic({
-    path: "./static/favicon.ico",
-  })
-);
-
-// Route for homepage - default position
 app.get("/", ({ redirect }) => {
   return redirect("/518");
 });
@@ -62,10 +53,8 @@ app.get("/:id", async (ctx) => {
   const themeName = getCookie(ctx, "themeName") as ThemeName | undefined;
   const flipped =
     (getCookie(ctx, "flipped") as "true" | "false" | undefined) || "false";
-  const [content, video] = await Promise.all([
-    Bun.file("./content.md").text(),
-    getVideo(),
-  ]);
+  const video = await getVideo();
+
   try {
     const id = validateId(ctx.req.param("id"));
 
@@ -98,5 +87,18 @@ app.post("/change-position", async (c) => {
   const id = validateId(body.id);
   return c.redirect(`/${id}`);
 });
+
+if (typeof Bun !== "undefined") {
+  const { serveStatic } = await import("hono/bun");
+  app.get("/public/*", serveStatic({}));
+  app.get(
+    "/favicon.ico",
+    serveStatic({
+      path: "./public/favicon.ico",
+    })
+  );
+
+  // Route for homepage - default position
+}
 
 export default app;

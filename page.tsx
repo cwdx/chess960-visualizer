@@ -10,7 +10,7 @@ const getThemeStyle = (themeName: ThemeName | (string & {})) => {
     @font-face {
       font-family: '${themeName}';
       font-display: swap;
-      src: url('/static/${themeName}.ttf') format('truetype');
+      src: url('/public/${themeName}.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
     }

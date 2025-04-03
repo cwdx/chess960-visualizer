@@ -1,3 +1,4 @@
+export const content = `
 # Chess960 Visualizer
 
 This visualizer helps you explore all 960 possible starting positions in Chess960 (also known as Fischer Random Chess), a chess variant where the positions of the main pieces on the first rank are randomized according to specific rules.
@@ -59,3 +60,4 @@ All normal castling rules still apply: neither piece can have moved before, the 
 - The first FIDE World Fischer Random Chess Championship was held in 2019, won by Wesley So
 - The latest champion is Hikaru Nakamura, who won the title in 2022
 - In about 90 of the 960 starting positions, players must give up castling rights on one side to castle on the other
+`;
