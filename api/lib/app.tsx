@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import Page from "./page";
 import { getRandomId, validateId } from "./get-position";
 import { getCookie, setCookie } from "hono/cookie";
-import { ThemeName, themes } from "./render-board";
+import { ThemeName, themes } from "../../render-board";
 import { getVideo } from "./get-video";
 import { cache } from "hono/cache";
 import { content } from "./content";
