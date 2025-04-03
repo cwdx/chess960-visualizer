@@ -97,8 +97,16 @@ if (typeof Bun !== "undefined") {
       path: "./public/favicon.ico",
     })
   );
-
-  // Route for homepage - default position
+} else {
+  // For Vercel environment
+  app.get("/public/*", async (c) => {
+    const path = c.req.path.replace("/public/", "");
+    return c.redirect(`/_vercel/static/public/${path}`, 307);
+  });
+  
+  app.get("/favicon.ico", (c) => {
+    return c.redirect("/_vercel/static/public/favicon.ico", 307);
+  });
 }
 
 export default app;

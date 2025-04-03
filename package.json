@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "vercel-build": "tsc"
+    "vercel-build": "tsc && cp -r public .vercel/output/static/"
   },
   "devDependencies": {
     "@types/bun": "latest"
