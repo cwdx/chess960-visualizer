@@ -1,9 +1,9 @@
 import { type CSSProperties } from "hono/jsx";
-import { getPosition, generateFen } from "./get-position";
-import { MiscelKey, miscelMap } from "./miscel";
-import { renderBoard, ThemeName, themes } from "../../render-board";
-import { markdownToHtml } from "./markdown";
-import { type Video } from "./get-video";
+import { getPosition, generateFen } from "./get-position.js";
+import { MiscelKey, miscelMap } from "./miscel.js";
+import { renderBoard, ThemeName, themes } from "./render-board.js";
+import { markdownToHtml } from "./markdown.js";
+import { type Video } from "./get-video.js";
 
 const getThemeStyle = (themeName: ThemeName | (string & {})) => {
   return `

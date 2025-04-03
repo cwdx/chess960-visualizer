@@ -1,11 +1,11 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { handle } from "hono/vercel";
-import { getVideo } from "./lib/get-video";
-import { validateId } from "./lib/get-position";
-import { content } from "./lib/content";
-import Page from "./lib/page";
-import { ThemeName } from "../render-board";
+import { getVideo } from "./lib/get-video.js";
+import { validateId } from "./lib/get-position.js";
+import { content } from "./lib/content.js";
+import Page from "./lib/page.js";
+import { ThemeName } from "./lib/render-board.js";
 
 const app = new Hono().basePath("/api");
 
