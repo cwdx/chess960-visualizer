@@ -4,7 +4,7 @@ import { handle } from "hono/vercel";
 import { getVideo } from "./lib/get-video.js";
 import { validateId } from "./lib/get-position.js";
 import { content } from "./lib/content.js";
-import Page from "./lib/page.js";
+import Page from "./lib/page.jsx";
 import { ThemeName } from "./lib/render-board.js";
 
 const app = new Hono().basePath("/api");
