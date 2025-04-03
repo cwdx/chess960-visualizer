@@ -1,15 +1,9 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
       "destination": "/api"
     }
   ],
-  "functions": {
-    "api/index.ts": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "buildCommand": "npm run vercel-build"
+  "redirects": [{ "source": "/", "destination": "/api", "permanent": false }]
 }
