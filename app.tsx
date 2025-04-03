@@ -7,7 +7,7 @@ import { getVideo } from "./get-video";
 import { cache } from "hono/cache";
 import { content } from "./content";
 
-const app = new Hono();
+const app = new Hono().basePath(typeof Bun !== "undefined" ? "/api" : "");
 
 app.get(
   "*",
