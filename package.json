@@ -2,6 +2,9 @@
   "name": "chess960",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "build": "echo 🔥"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -9,6 +12,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "hono": "^4.7.5"
+    "hono": "^4.7.5",
+    "@hono/node-server": "^1.8.2"
   }
 }
