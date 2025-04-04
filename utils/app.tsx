@@ -8,12 +8,19 @@ import { getVideo } from "./get-video";
 import { cache } from "hono/cache";
 import { content } from "./content";
 import { CookieOptions } from "hono/utils/cookie";
+import { jsxRenderer } from "hono/jsx-renderer";
+import { Suspense } from "hono/jsx";
+import Layout from "./layout";
 
-const app = new Hono();
+type Variables = {
+  id: number;
+  themeName: ThemeName;
+  flipped: boolean;
+};
 
-if (typeof Bun === "undefined") {
-  app.basePath("/api");
-}
+const app = new Hono<{
+  Variables: Variables;
+}>();
 
 const cookieOptions: CookieOptions =
   process.env.NODE_ENV === "production"
@@ -28,23 +35,32 @@ app.use(logger());
 app.get(
   "*",
   cache({
-    cacheName: "chess960-visualizer2",
+    cacheName: "chess960-visualizer",
     cacheControl: "max-age=3600",
   })
 );
+
+app.get("*", (c, next) => {
+  c.header("Cache-Control", "max-age=3600");
+  c.header("Vary", "Cookie");
+
+  const flipped =
+    (getCookie(c, "flipped") as "true" | "false" | undefined) || "false";
+  const themeName =
+    (getCookie(c, "themeName") as ThemeName | undefined) || "merida";
+
+  c.set("flipped", flipped === "true");
+  c.set("themeName", themeName);
+
+  return next();
+});
 
 app.get("/", ({ redirect }) => {
   return redirect("/518");
 });
 
-app.get("/random", (c) => {
-  const id = getRandomId();
-  return c.redirect(`/${id}`);
-});
-
 app.get("/next-theme", (c) => {
-  const themeName = getCookie(c, "themeName") as ThemeName | undefined;
-  const themeIndex = Object.keys(themes).indexOf(themeName || "merida");
+  const themeIndex = Object.keys(themes).indexOf(c.get("themeName"));
   const firstTheme = Object.keys(themes)[0];
   const nextTheme =
     Object.keys(themes)[(themeIndex + 1) % Object.keys(themes).length] ||
@@ -56,36 +72,56 @@ app.get("/next-theme", (c) => {
 });
 
 app.get("/flip", (c) => {
-  const flipped =
-    (getCookie(c, "flipped") as "true" | "false" | undefined) || "false";
   const redirect = c.req.query("redirect") || "/";
 
-  setCookie(c, "flipped", flipped === "true" ? "false" : "true", cookieOptions);
+  setCookie(c, "flipped", c.get("flipped") ? "false" : "true", cookieOptions);
 
   return c.redirect(redirect, 302);
 });
 
-app.get("/:id", async (ctx) => {
-  const themeName = getCookie(ctx, "themeName") as ThemeName | undefined;
-  const flipped =
-    (getCookie(ctx, "flipped") as "true" | "false" | undefined) || "false";
-  const video = await getVideo();
-
+app.get("/:id", async (c, next) => {
   try {
-    const id = validateId(ctx.req.param("id"));
+    const id = validateId(c.req.param("id"));
+    c.set("id", id);
+    return next();
+  } catch (e) {
+    const text = e instanceof Error ? e.message : "Unknown error";
+    return c.newResponse(text, {
+      status: 404,
+    });
+  }
+});
 
-    return ctx.html(
+app.get(
+  "/:id",
+  jsxRenderer(
+    ({ children }, c) => {
+      return (
+        <Layout id={c.get("id")} themeName={c.get("themeName")}>
+          {children}
+        </Layout>
+      );
+    },
+    { stream: true }
+  )
+);
+
+app.get("/:id", async (c) => {
+  const video = await getVideo();
+  const randomId = getRandomId();
+
+  return c.render(
+    <Suspense fallback={<div>loading...</div>}>
       <Page
-        id={id}
-        themeName={themeName || "merida"}
-        flipped={flipped === "true"}
+        id={c.get("id")}
+        randomId={randomId}
+        themeName={c.get("themeName")}
+        flipped={c.get("flipped")}
         content={content}
         video={video}
       />
-    );
-  } catch (e) {
-    return ctx.redirect("/");
-  }
+    </Suspense>
+  );
 });
 
 app.post("/change-theme", async (c) => {

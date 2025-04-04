@@ -2,8 +2,9 @@ const divmod = (a: number, b: number) => [Math.floor(a / b), a % b];
 
 export const validateId = (id: unknown) => {
   if (typeof id === "string") id = parseInt(id);
-  if (typeof id !== "number") throw new Error("invalid");
-  if (id < 0 || id > 959 || id % 1 !== 0) throw new Error("invalid");
+  if (typeof id !== "number") throw new Error("Invalid Position ID");
+  if (id < 0 || id > 959 || id % 1 !== 0)
+    throw new Error("Invalid Position ID");
   return id;
 };
 
@@ -148,4 +149,96 @@ export const renderFen = (fen: string): string => {
   });
 
   return result.map((r) => r.join("")).join("\n");
+};
+
+export const positionToId = (position: string): number => {
+  position = String(position).toUpperCase().trim();
+
+  if (!position || position.length !== 8) {
+    throw new Error("Invalid position string: must be 8 characters");
+  }
+
+  const pieceCount = {
+    R: 0,
+    N: 0,
+    B: 0,
+    Q: 0,
+    K: 0,
+  };
+
+  for (const piece of position) {
+    if (!pieceCount.hasOwnProperty(piece)) {
+      throw new Error(`Invalid piece: ${piece}`);
+    }
+    pieceCount[piece as keyof typeof pieceCount]++;
+  }
+
+  if (
+    pieceCount.R !== 2 ||
+    pieceCount.N !== 2 ||
+    pieceCount.B !== 2 ||
+    pieceCount.Q !== 1 ||
+    pieceCount.K !== 1
+  ) {
+    throw new Error("Invalid position: incorrect number of pieces");
+  }
+
+  const bPos = position
+    .split("")
+    .map((piece, index) => (piece === "B" ? index : -1))
+    .filter((index) => index !== -1);
+
+  const b1Color = bPos[0] % 2;
+  const b2Color = bPos[1] % 2;
+
+  if (b1Color === b2Color) {
+    throw new Error(
+      "Invalid position: bishops must be on opposite colored squares"
+    );
+  }
+
+  let darkSquaredBishopPos: number, lightSquaredBishopPos: number;
+
+  if (bPos[0] % 2 === 0) {
+    darkSquaredBishopPos = bPos[0];
+    lightSquaredBishopPos = bPos[1];
+  } else {
+    darkSquaredBishopPos = bPos[1];
+    lightSquaredBishopPos = bPos[0];
+  }
+
+  const b1 = Math.floor(lightSquaredBishopPos / 2);
+  const b2 = Math.floor(darkSquaredBishopPos / 2);
+
+  const emptySquares = position
+    .split("")
+    .map((piece, index) => (piece !== "B" ? index : -1))
+    .filter((index) => index !== -1);
+
+  const qPos = position.indexOf("Q");
+  const qIdx = emptySquares.indexOf(qPos);
+
+  const nPos = position
+    .split("")
+    .map((piece, index) => (piece === "N" ? index : -1))
+    .filter((index) => index !== -1);
+
+  const availablePositions = position
+    .split("")
+    .map((piece, index) => (piece !== "B" && piece !== "Q" ? index : -1))
+    .filter((index) => index !== -1);
+
+  const nIdxs = nPos
+    .map((pos) => availablePositions.indexOf(pos))
+    .sort((a, b) => a - b);
+
+  const nIdx = knightMap.findIndex(
+    ([k1, k2]) => k1 === nIdxs[0] && k2 === nIdxs[1]
+  );
+
+  if (nIdx === -1) {
+    throw new Error("Invalid knight positions");
+  }
+
+  return b1 + 4 * (b2 + 4 * (qIdx + 6 * nIdx));
 };
