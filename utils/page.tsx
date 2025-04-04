@@ -426,7 +426,7 @@ export default function Page({
         <title>Chess960 Visualizer | Position {id}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style dangerouslySetInnerHTML={{ __html: style(themeName) }} />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/public/favicon.ico" />
       </head>
       <body>
         <ControlBar themeName={themeName} id={id} />

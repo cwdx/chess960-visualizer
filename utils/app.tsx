@@ -95,21 +95,11 @@ app.post("/change-position", async (c) => {
 if (typeof Bun !== "undefined") {
   const { serveStatic } = await import("hono/bun");
   app.get("/public/*", serveStatic({}));
-  app.get(
-    "/favicon.ico",
-    serveStatic({
-      path: "../public/favicon.ico",
-    })
-  );
 } else {
   // For Vercel environment
   app.get("/public/*", async (c) => {
     const path = c.req.path.replace("/public/", "");
     return c.redirect(`/_vercel/static/public/${path}`, 307);
-  });
-
-  app.get("/favicon.ico", (c) => {
-    return c.redirect("/_vercel/static/public/favicon.ico", 307);
   });
 }
 
