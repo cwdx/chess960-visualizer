@@ -78,7 +78,17 @@ export default function Layout({
         <link rel="stylesheet" href="/public/page.css" />
         <link rel="icon" href="/public/favicon.ico" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.fonts.ready.then(() => {
+              document.body.classList.add("font-loaded");
+          })`,
+          }}
+        />
+      </body>
     </html>
   );
 }

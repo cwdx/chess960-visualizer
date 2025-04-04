@@ -1,7 +1,12 @@
-import { type CSSProperties } from "hono/jsx";
-import { getPosition, generateFen, positionToId } from "./get-position.js";
-import { MiscelKey, miscelMap } from "./miscel.js";
-import { Piece as TPiece, renderBoard, ThemeName, themes } from "./render-board.js";
+import { useEffect } from "hono/jsx";
+import { getPosition, generateFen } from "./get-position.js";
+import { Icon } from "./icon.js";
+import {
+  Piece as TPiece,
+  renderBoard,
+  ThemeName,
+  themes,
+} from "./render-board.js";
 import { markdownToHtml } from "./markdown.js";
 import { type Video } from "./get-video.js";
 import { generateChessCoordinates } from "./get-instructions.js";
@@ -28,15 +33,27 @@ export default function Page({
   const board = renderBoard(fen, themeName, flipped);
   const instructions = generateChessCoordinates(position);
 
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      // Execute your script here
+      console.log("Custom font has been loaded");
+    });
+  }, []);
+
   return (
     <>
-      <ControlBar themeName={themeName} id={id} randomId={randomId} />
+      <ControlBar
+        themeName={themeName}
+        id={id}
+        randomId={randomId}
+        flipped={flipped}
+      />
 
       <div class="p-4 md:p-6 lg:p-8">
         <main class="default-container">
           <div class="text-center">
             <h1 class="text-3xl mb-6 mx-auto">
-              Chess960 Position <mark>{id}</mark>
+              Chess960 Position <mark>#{id}</mark>
             </h1>
             <Board board={board} themeName={themeName} isFlipped={flipped} />
           </div>
@@ -68,15 +85,29 @@ export default function Page({
               </div>
             </div>
 
-            <p className="whitespace-pre-wrap italic mb-4 mt-4">
-              <Icon icon="invitationLetter" className="align-top" />
-              &nbsp;&nbsp;{instructions.notes} FEN:
-            </p>
+            <hr class="my-6 border-none" />
 
-            <pre class="text-sm inline-block w-full p-1 px-2 overflow-x-auto">
-              <Icon icon="scoreSheet" />
-              &nbsp;
+            <h5 class="text-sm font-medium text-left my-2">
+              <Icon icon="scoreSheet" /> Starting Rank
+            </h5>
+            <pre class="text-sm inline-block w-full p-1 px-2 overflow-x-auto text-left">
+              {position}
+            </pre>
+
+            <h5 class="text-sm font-medium text-left my-2">
+              <Icon icon="scoreSheet" /> FEN
+            </h5>
+            <pre class="text-sm inline-block w-full p-1 px-2 overflow-x-auto text-left">
               {fen}
+            </pre>
+
+            <h5 class="text-sm font-medium text-left my-2">
+              <Icon icon="scoreSheet" /> PGN
+            </h5>
+            <pre class="text-sm inline-block w-full p-1 px-2 overflow-x-auto text-left">
+              {[`[FEN "${fen}"]`, `[Setup "1"]`, `[Variant "Chess960"]`].join(
+                "\n"
+              )}
             </pre>
           </article>
 
@@ -96,25 +127,7 @@ export default function Page({
   );
 }
 
-function Icon({
-  icon: char,
-  style,
-  className,
-}: {
-  icon: MiscelKey;
-  style?: CSSProperties;
-  className?: string;
-}) {
-  const v = miscelMap[char];
-  return (
-    <span
-      class={`font-chess-miscel inline ${className}`}
-      style={{ verticalAlign: "bottom", ...style }}
-    >
-      {v}
-    </span>
-  );
-}
+
 
 function Footer() {
   return (
@@ -153,22 +166,28 @@ function ControlBar({
   themeName,
   id,
   randomId,
+  flipped,
 }: {
   themeName: ThemeName;
   id: number;
   randomId: number;
+  flipped: boolean;
 }) {
   return (
     <div className="control-bar">
       <div className="nav-buttons">
-        <a href="/518" id="standard" className="button">
+        <a
+          href="/518"
+          id="standard"
+          className={id === 518 ? "button inverted" : "button"}
+        >
           Standard&nbsp;&nbsp;
           <Icon icon="filledChessBoard" />
         </a>
         &nbsp;&nbsp;
         <a href={`/${randomId}`} id="random" className="button inverted">
-          Shuffle&nbsp;&nbsp;
-          <Icon icon="filledQuestionMark" />
+          Random&nbsp;&nbsp;
+          <span class="text-2xl rotate-45 inline-block -my-1">⚄</span>
         </a>
       </div>
 
@@ -192,7 +211,7 @@ function ControlBar({
           value={id}
         />
         <button type="submit" className="button inverted">
-          Set Position
+          Set<span className="hidden lg:inline">&nbsp;Position</span>
         </button>
         &nbsp;&nbsp;
         <a href={`/${Math.min(959, id + 1)}`} className="button">
@@ -204,34 +223,49 @@ function ControlBar({
         action="/change-theme"
         method="post"
         name="themeForm"
-        className="nav-buttons"
+        className="hidden"
       >
-        <div class="select" style={{ width: "138px" }}>
-          <select name="themeName">
-            {Object.entries(themes).map(([name]) => (
-              <option
-                value={name}
-                selected={name === themeName ? true : undefined}
-                key={name}
-              >
-                {name}
-              </option>
-            ))}
-          </select>
+        <div class="hidden lg:flex">
+          <div class="select" style={{ width: "138px" }}>
+            <select name="themeName">
+              {Object.entries(themes).map(([name]) => (
+                <option
+                  value={name}
+                  selected={name === themeName ? true : undefined}
+                  key={name}
+                >
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <input type="hidden" name="id" value={id} />
+          <button type="submit" className="button inverted hidden lg:inline">
+            Set Theme
+          </button>
+          &nbsp;&nbsp;
+          <a href={`/next-theme?redirect=/${id}`} className="button">
+            <Icon icon="filledSplitArrowRight" />
+          </a>
         </div>
-        <input type="hidden" name="id" value={id} />
-        <button type="submit" className="button inverted">
-          Set Theme
-        </button>
-        &nbsp;&nbsp;
-        <a href={`/next-theme?redirect=/${id}`} className="button">
-          <Icon icon="filledSplitArrowRight" />
+      </form>
+
+      <div class="nav-buttons">
+        <a
+          href={`/next-theme?redirect=/${id}`}
+          className="button inverted lg:hidden"
+          title={themeName}
+        >
+          Next Chess Set
         </a>
         &nbsp;&nbsp;
-        <a href={`/flip?redirect=/${id}`} className="button">
+        <a
+          href={`/flip?redirect=/${id}`}
+          className={flipped ? "button inverted" : "button"}
+        >
           Flip
         </a>
-      </form>
+      </div>
     </div>
   );
 }
@@ -254,10 +288,10 @@ function VideoPlayer({ video }: { video: Video }) {
         ></iframe>
       </div>
       <div class="video-info text-center">
-        <h3 class="text-lg mb-2 font-medium">
+        <h3 class="text-lg mb-2">
           <a
             href={video.url}
-            class="video-title"
+            class="video-title font-medium"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -265,17 +299,16 @@ function VideoPlayer({ video }: { video: Video }) {
           </a>
         </h3>
 
-        <h4>
-          <a
-            href={channelUrl}
-            class="video-channel"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            @{video.channel}
-          </a>{" "}
-          {video.description}
-        </h4>
+        <a
+          href={channelUrl}
+          class="video-channel"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          @{video.channel}
+        </a>
+        {" - "}
+        {video.description}
       </div>
     </div>
   );

@@ -157,7 +157,7 @@ export const themes = {
   maya: meridaTheme,
   mark: meridaTheme,
   mediaeval: meridaTheme,
-  millennia: meridaTheme,
+  //millennia: meridaTheme,
   millennia2: meridaTheme,
 } as const satisfies Record<string, Theme>;
 

@@ -58,6 +58,5 @@ All normal castling rules still apply: neither piece can have moved before, the 
 - The standard chess starting position is number 518 in Chess960
 - Chess960 has been played by many top grandmasters, including Magnus Carlsen and Hikaru Nakamura
 - The first FIDE World Fischer Random Chess Championship was held in 2019, won by Wesley So
-- The latest champion is Hikaru Nakamura, who won the title in 2022
-- In about 90 of the 960 starting positions, players must give up castling rights on one side to castle on the other
+- Hikaru Nakamura won the title in 2022
 `;
