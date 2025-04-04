@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { logger } from "hono/logger";
 import Page from "./page";
 import { getRandomId, validateId } from "./get-position";
 import { getCookie, setCookie } from "hono/cookie";
@@ -6,12 +7,23 @@ import { ThemeName, themes } from "./render-board";
 import { getVideo } from "./get-video";
 import { cache } from "hono/cache";
 import { content } from "./content";
+import { CookieOptions } from "hono/utils/cookie";
 
 const app = new Hono();
 
 if (typeof Bun === "undefined") {
   app.basePath("/api");
 }
+
+const cookieOptions: CookieOptions =
+  process.env.NODE_ENV === "production"
+    ? {
+        secure: true,
+        sameSite: "strict",
+      }
+    : {};
+
+app.use(logger());
 
 app.get(
   "*",
@@ -38,7 +50,7 @@ app.get("/next-theme", (c) => {
     Object.keys(themes)[(themeIndex + 1) % Object.keys(themes).length] ||
     firstTheme;
 
-  setCookie(c, "themeName", nextTheme);
+  setCookie(c, "themeName", nextTheme, cookieOptions);
 
   return c.redirect(c.req.query("redirect") || "/");
 });
@@ -48,7 +60,7 @@ app.get("/flip", (c) => {
     (getCookie(c, "flipped") as "true" | "false" | undefined) || "false";
   const redirect = c.req.query("redirect") || "/";
 
-  setCookie(c, "flipped", flipped === "true" ? "false" : "true");
+  setCookie(c, "flipped", flipped === "true" ? "false" : "true", cookieOptions);
 
   return c.redirect(redirect, 302);
 });
@@ -81,7 +93,7 @@ app.post("/change-theme", async (c) => {
   const themeName = body.themeName as ThemeName;
   const id = body.id;
 
-  setCookie(c, "themeName", themeName);
+  setCookie(c, "themeName", themeName, cookieOptions);
 
   return c.redirect(`/${id}`, 302);
 });
