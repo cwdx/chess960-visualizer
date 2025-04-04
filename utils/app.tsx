@@ -71,8 +71,8 @@ app.use((c, next) => {
 app.use(
   "*",
   rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    limit: process.env.NODE_ENV === "production" ? 100 : 1000,
+    windowMs: 60_000,
+    limit: process.env.NODE_ENV === "production" ? 10 : 100,
     standardHeaders: "draft-6",
     keyGenerator: (c: Context<{ Variables: Partial<Variables> }>) => {
       const connInfo = c.get("connInfo");

@@ -64,7 +64,6 @@ a {
   .font-loader,
   .fcm {
     opacity: 0;
-    transition: opacity 0.2s ease-in-out;
   }
 
   .font-loaded .fcm,

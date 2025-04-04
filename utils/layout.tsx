@@ -83,7 +83,10 @@ export default function Layout({
 
         <script
           dangerouslySetInnerHTML={{
-            __html: `document.fonts.ready.then(() => {
+            __html: `
+            const now = new Date();
+            
+            document.fonts.ready.then(() => {
               document.body.classList.add("font-loaded");
           })`,
           }}
