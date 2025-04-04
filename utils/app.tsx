@@ -71,8 +71,8 @@ app.use((c, next) => {
 app.use(
   "*",
   rateLimiter({
-    windowMs: 60_000,
-    limit: process.env.NODE_ENV === "production" ? 10 : 100,
+    windowMs: 1000 * 60,
+    limit: process.env.NODE_ENV === "production" ? 100 : 1000,
     standardHeaders: "draft-6",
     keyGenerator: (c: Context<{ Variables: Partial<Variables> }>) => {
       const connInfo = c.get("connInfo");
@@ -86,7 +86,7 @@ app.use(
         throw new Error("No session ID");
       }
 
-      return `${connInfo.remote.address}-${sessionId}`;
+      return `${connInfo.remote.address}--${sessionId}--${c.req.path}`;
     },
   })
 );
