@@ -3,8 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "vercel dev",
-    "deploy": "vercel"
+    "start": "bun index.ts",
+    "dev": "bun --hot index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
