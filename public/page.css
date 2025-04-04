@@ -2,10 +2,15 @@
   --background-color: #f5f0dd;
   --text-color: #3c3433;
   --panel-color: #d7d3c2;
+  --panel-color-alt: #e4e0d0;
   --link-color: #8b5a2b;
   --square-size: clamp(32px, 10vw, 64px);
   --body-font: "Gelasio", Georgia, "Times New Roman", serif;
   --mono-font: "Courier Prime", "Courier New", monospace;
+}
+
+.panel-alt {
+  background-color: var(--panel-color-alt);
 }
 
 body {
@@ -72,6 +77,10 @@ a {
   }
 }
 
+.font-mono {
+  font-family: var(--mono-font);
+}
+
 mark {
   background-color: var(--text-color);
   color: var(--background-color);
@@ -103,6 +112,12 @@ mark.inverted {
 .button.inverted {
   background-color: var(--text-color);
   color: var(--background-color);
+}
+
+.button.small {
+  font-size: 14px;
+  padding: 5px;
+  max-height: 30px;
 }
 
 .button:hover {

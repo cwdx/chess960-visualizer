@@ -36,14 +36,6 @@ Different starting positions create unique strategic opportunities:
 - Knight positioning may offer early tactical opportunities
 - Castling is still allowed but follows special rules in Chess960
 
-## App Features
-
-- **Navigation**: Use arrows to move through different positions or enter a specific position number
-- **Quick Access**: Jump to the standard chess position (518) or get a random position
-- **Theme Selection**: Choose different chess piece fonts to display the board
-- **Board Orientation**: Flip the board to view positions from either perspective
-- **FEN Notation**: View the FEN (Forsyth-Edwards Notation) for each position
-
 ## Castling in Chess960
 
 In Chess960, castling still ends with the king and rook in the same positions as in traditional chess:
@@ -55,7 +47,8 @@ All normal castling rules still apply: neither piece can have moved before, the 
 
 ## Interesting Facts
 
-- The standard chess starting position is number 518 in Chess960
+- The standard chess starting position is number [#518](/518) in Chess960
+- Position [#534](/534) is the same as the standard chess starting position with the King and Queen swapped
 - Chess960 has been played by many top grandmasters, including Magnus Carlsen and Hikaru Nakamura
 - The first FIDE World Fischer Random Chess Championship was held in 2019, won by Wesley So
 - Hikaru Nakamura won the title in 2022

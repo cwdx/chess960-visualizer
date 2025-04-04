@@ -1,19 +1,12 @@
 import { Style, css } from "hono/css";
 import { ThemeName } from "./render-board";
+import { CSSProperties } from "hono/jsx";
 
-const styles = css`
-  .chess-board-container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    --rim-size: calc(var(--square-size) * 0.3);
-  }
-
+export const boardStyles = css`
   .chess-board {
     position: relative;
     border: 2px solid var(--text-color);
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
     padding: 3px;
@@ -73,32 +66,28 @@ export function Board({
   themeName,
   isFlipped = false,
   showCoordinates = false,
+  className = "",
+  style,
 }: {
   board: string;
   themeName: ThemeName;
   isFlipped?: boolean;
   showCoordinates?: boolean;
+  className?: string;
+  style?: CSSProperties;
 }) {
   return (
     <>
-      <Style>{styles}</Style>
-      <div
-        className={`chess-board-container ${
-          showCoordinates ? "show-coordinates" : ""
-        }`}
-      >
-        <XCoordinates isFlipped={isFlipped} />
-        <YCoordinates isFlipped={isFlipped} />
+      <XCoordinates isFlipped={isFlipped} />
+      <YCoordinates isFlipped={isFlipped} />
 
-        <div className="chess-board mx-auto">
-          <div
-            className={`fcm mx-auto font-chess-${themeName}`}
-            dangerouslySetInnerHTML={{
-              __html: board,
-            }}
-          />
-        </div>
-      </div>
+      <div
+        className={`chess-board fcm mx-auto font-chess-${themeName} ${className}`}
+        style={style}
+        dangerouslySetInnerHTML={{
+          __html: board,
+        }}
+      />
     </>
   );
 }

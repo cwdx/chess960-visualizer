@@ -242,3 +242,7 @@ export const positionToId = (position: string): number => {
 
   return b1 + 4 * (b2 + 4 * (qIdx + 6 * nIdx));
 };
+
+export const fenToPgn = (fen: string) => {
+  return [`[FEN "${fen}"]`, `[Setup "1"]`, `[Variant "Chess960"]`].join("\n");
+};

@@ -9,7 +9,7 @@ import {
   positionToId,
   validateId,
 } from "./get-position";
-import { generateChessCoordinates } from "./get-instructions";
+import { getInstructions } from "./get-instructions";
 import { getCookie, setCookie } from "hono/cookie";
 import { renderBoard, ThemeName, themes } from "./render-board";
 import { getVideo } from "./get-video";
@@ -25,6 +25,7 @@ import {
   Store as RateLimitStore,
 } from "hono-rate-limiter";
 import { type ConnInfo } from "hono/conninfo";
+import { AllPositions } from "./all-positions";
 
 type Variables = {
   id: number;
@@ -130,6 +131,12 @@ app.get("*", (c, next) => {
 app.get("/next-theme", (c) => {
   c.header("Cache-Control", "no-store, max-age=0");
 
+  // get referrer
+  const referrer = c.req.header("Referrer");
+  const redirect = referrer || "/";
+
+  console.log("referrer", referrer);
+
   const themeIndex = Object.keys(themes).indexOf(c.get("themeName"));
   const firstTheme = Object.keys(themes)[0];
   const nextTheme =
@@ -151,6 +158,34 @@ app.get("/flip", (c) => {
   return c.redirect(redirect, 302);
 });
 
+app.get(
+  "/all",
+  jsxRenderer(
+    ({ children }, c) => {
+      const randomId = getRandomId();
+      const flipped = c.get("flipped");
+
+      return (
+        <Layout
+          id={1}
+          themeName={c.get("themeName") || "merida"}
+          randomId={randomId}
+          flipped={flipped}
+          currentPath={c.req.path}
+        >
+          {children}
+        </Layout>
+      );
+    },
+    { stream: true }
+  ),
+  (c) => {
+    return c.render(
+      <AllPositions themeName={c.get("themeName") || "merida"} />
+    );
+  }
+);
+
 app.get("/:id", async (c, next) => {
   try {
     const id = validateId(c.req.param("id"));
@@ -168,8 +203,17 @@ app.get(
   "/:id",
   jsxRenderer(
     ({ children }, c) => {
+      const randomId = getRandomId();
+      const flipped = c.get("flipped");
+
       return (
-        <Layout id={c.get("id")} themeName={c.get("themeName")}>
+        <Layout
+          id={c.get("id")}
+          themeName={c.get("themeName")}
+          randomId={randomId}
+          flipped={flipped}
+          currentPath={c.req.path}
+        >
           {children}
         </Layout>
       );
@@ -256,7 +300,7 @@ app.get("/api/v1/position/:id", (c) => {
     const position = getPosition(+id);
     const fen = generateFen(position);
     const board = renderBoard(fen, "merida");
-    const instructions = generateChessCoordinates(position);
+    const instructions = getInstructions(position);
 
     return c.json({
       id,

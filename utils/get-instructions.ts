@@ -1,4 +1,4 @@
-export function generateChessCoordinates(positionString: string): {
+export function getInstructions(positionString: string): {
   white: string;
   black: string;
   notes: string;

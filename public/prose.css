@@ -12,20 +12,10 @@
 
 .prose a {
   position: relative;
+  text-decoration: none;
 }
 
-.prose a::before {
-  content: "";
-  position: absolute;
-  bottom: -0.3em;
-  left: 0;
-  right: 0;
-  height: 3px;
-  width: 100%;
-  background-image: linear-gradient(to right, #00ff99, #00ccff);
-  transition: transform 0.2s ease-in-out;
-  pointer-events: none;
-}
+
 
 .prose a:hover::before,
 .prose a:focus::before {
