@@ -94,7 +94,7 @@ const utrechtTheme: Theme = {
   "+": ["/", " "],
 };
 
-function applyTheme(renderedFen: string, themeMap: Theme, flipped = true) {
+function applyTheme(renderedFen: string, themeMap: Theme, flipped = true): string {
   try {
     const board = renderedFen.split("\n").map((row) => row.split(""));
     const newBoard: string[][] = [];

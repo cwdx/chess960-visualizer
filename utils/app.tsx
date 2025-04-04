@@ -7,7 +7,11 @@ import { getVideo } from "./get-video";
 import { cache } from "hono/cache";
 import { content } from "./content";
 
-const app = new Hono().basePath(typeof Bun !== "undefined" ? "/api" : "");
+const app = new Hono();
+
+if (typeof Bun === "undefined") {
+  app.basePath("/api");
+}
 
 app.get(
   "*",
@@ -94,7 +98,7 @@ if (typeof Bun !== "undefined") {
   app.get(
     "/favicon.ico",
     serveStatic({
-      path: "./public/favicon.ico",
+      path: "../public/favicon.ico",
     })
   );
 } else {
@@ -103,7 +107,7 @@ if (typeof Bun !== "undefined") {
     const path = c.req.path.replace("/public/", "");
     return c.redirect(`/_vercel/static/public/${path}`, 307);
   });
-  
+
   app.get("/favicon.ico", (c) => {
     return c.redirect("/_vercel/static/public/favicon.ico", 307);
   });

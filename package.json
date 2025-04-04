@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "vercel": "^32.4.1"
+    "vercel": "^41.4.1"
   },
   "dependencies": {
     "hono": "^4.4.2",
