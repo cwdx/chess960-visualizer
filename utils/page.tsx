@@ -1,9 +1,12 @@
 import { type CSSProperties } from "hono/jsx";
 import { getPosition, generateFen, positionToId } from "./get-position.js";
 import { MiscelKey, miscelMap } from "./miscel.js";
-import { renderBoard, ThemeName, themes } from "./render-board.js";
+import { Piece as TPiece, renderBoard, ThemeName, themes } from "./render-board.js";
 import { markdownToHtml } from "./markdown.js";
 import { type Video } from "./get-video.js";
+import { generateChessCoordinates } from "./get-instructions.js";
+import { Board } from "./board.js";
+import { Piece } from "./piece.js";
 
 export default function Page({
   id,
@@ -23,104 +26,90 @@ export default function Page({
   const position = getPosition(id);
   const fen = generateFen(position);
   const board = renderBoard(fen, themeName, flipped);
-
-  const _id = positionToId(position);
-
-  console.log({ _id });
+  const instructions = generateChessCoordinates(position);
 
   return (
     <>
       <ControlBar themeName={themeName} id={id} randomId={randomId} />
 
-      <main style={{ textAlign: "center" }}>
-        <ChessBoard board={board} themeName={themeName} size={60} />
+      <div class="p-4 md:p-6 lg:p-8">
+        <main class="default-container">
+          <div class="text-center">
+            <h1 class="text-3xl mb-6 mx-auto">
+              Chess960 Position <mark>{id}</mark>
+            </h1>
+            <Board board={board} themeName={themeName} isFlipped={flipped} />
+          </div>
 
-        <h1
-          style={{
-            color: "var(--text-color)",
-            margin: "32px 0 24px",
-            border: "none",
-            padding: "0",
-          }}
-        >
-          Chess960 Position <mark>{id}</mark>{" "}
-          <mark className="inverted">{position.toLowerCase()}</mark>
-        </h1>
-
-        <div>
-          <pre style={{ fontSize: "13px" }}>
-            <MiscelCharacter char="scoreSheet" />
-            &nbsp;
-            {fen}
-          </pre>
-        </div>
-
-        <pre style={{ width: "100%" }} hidden>
-          {Object.keys(miscelMap).map((v) => (
-            <div style={{ fontSize: "18px", textAlign: "left" }}>
-              <MiscelCharacter
-                char={v as MiscelKey}
-                style={{ fontSize: "48px" }}
-              />
-              &nbsp;
-              {v}
+          <article class="my-8 text-center">
+            <div className="flex flex-row gap-4">
+              <div className="flex-1">
+                <h3 class="text-2xl mb-5 font-medium">
+                  <Piece
+                    piece={position[0] as TPiece}
+                    themeName={themeName}
+                    darkSquare
+                    className="text-3xl align-text-top mr-1"
+                  />
+                  Setup as White
+                </h3>
+                <p className="whitespace-pre-wrap">{instructions.white}</p>
+              </div>
+              <div className="flex-1">
+                <h3 class="text-2xl mb-5 font-medium">
+                  <Piece
+                    piece={position[0].toLowerCase() as TPiece}
+                    themeName={themeName}
+                    className="text-3xl align-text-top mr-1"
+                  />
+                  Setup as Black
+                </h3>
+                <p className="whitespace-pre-wrap">{instructions.black}</p>
+              </div>
             </div>
-          ))}
-          \
-        </pre>
 
-        <br />
-        <br />
+            <p className="whitespace-pre-wrap italic mb-4 mt-4">
+              <Icon icon="invitationLetter" className="align-top" />
+              &nbsp;&nbsp;{instructions.notes} FEN:
+            </p>
 
-        <VideoPlayer video={video} />
+            <pre class="text-sm inline-block w-full p-1 px-2 overflow-x-auto">
+              <Icon icon="scoreSheet" />
+              &nbsp;
+              {fen}
+            </pre>
+          </article>
 
-        <article
-          dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }}
-          className="prose"
-        />
-      </main>
+          <VideoPlayer video={video} />
+
+          <hr class="mb-12 border-none" />
+
+          <article
+            dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }}
+            className="prose"
+          />
+        </main>
+      </div>
 
       <Footer />
     </>
   );
 }
 
-function ChessBoard({
-  board,
-  themeName,
-  size = 64,
-}: {
-  board: string;
-  themeName: ThemeName;
-  size?: number;
-}) {
-  return (
-    <div className="chess-board">
-      <div
-        className={`fcm font-chess-${themeName}`}
-        style={{
-          fontSize: `${size}px`,
-        }}
-        dangerouslySetInnerHTML={{
-          __html: board,
-        }}
-      />
-    </div>
-  );
-}
-
-function MiscelCharacter({
-  char,
+function Icon({
+  icon: char,
   style,
+  className,
 }: {
-  char: MiscelKey;
+  icon: MiscelKey;
   style?: CSSProperties;
+  className?: string;
 }) {
   const v = miscelMap[char];
   return (
     <span
-      class="font-chess-miscel"
-      style={{ verticalAlign: "baseline", ...style }}
+      class={`font-chess-miscel inline ${className}`}
+      style={{ verticalAlign: "bottom", ...style }}
     >
       {v}
     </span>
@@ -129,7 +118,7 @@ function MiscelCharacter({
 
 function Footer() {
   return (
-    <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "24px" }}>
+    <p class="text-md px-4 py-6 text-center">
       <small>
         <a
           href="https://en.wikipedia.org/wiki/Fischer_random_chess_numbering_scheme"
@@ -174,12 +163,12 @@ function ControlBar({
       <div className="nav-buttons">
         <a href="/518" id="standard" className="button">
           Standard&nbsp;&nbsp;
-          <MiscelCharacter char="filledChessBoard" />
+          <Icon icon="filledChessBoard" />
         </a>
         &nbsp;&nbsp;
         <a href={`/${randomId}`} id="random" className="button inverted">
           Shuffle&nbsp;&nbsp;
-          <MiscelCharacter char="filledQuestionMark" />
+          <Icon icon="filledQuestionMark" />
         </a>
       </div>
 
@@ -190,7 +179,7 @@ function ControlBar({
         className="nav-buttons centered"
       >
         <a href={`/${Math.max(0, id - 1)}`} className="button">
-          <MiscelCharacter char="filledSplitArrowLeft" />
+          <Icon icon="filledSplitArrowLeft" />
         </a>
         &nbsp;&nbsp;
         <input
@@ -207,7 +196,7 @@ function ControlBar({
         </button>
         &nbsp;&nbsp;
         <a href={`/${Math.min(959, id + 1)}`} className="button">
-          <MiscelCharacter char="filledSplitArrowRight" />
+          <Icon icon="filledSplitArrowRight" />
         </a>
       </form>
 
@@ -236,7 +225,7 @@ function ControlBar({
         </button>
         &nbsp;&nbsp;
         <a href={`/next-theme?redirect=/${id}`} className="button">
-          <MiscelCharacter char="filledSplitArrowRight" />
+          <Icon icon="filledSplitArrowRight" />
         </a>
         &nbsp;&nbsp;
         <a href={`/flip?redirect=/${id}`} className="button">
@@ -247,16 +236,8 @@ function ControlBar({
   );
 }
 
-function extractYoutubeId(url: string) {
-  const regex =
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-}
-
 function VideoPlayer({ video }: { video: Video }) {
-  const id = extractYoutubeId(video.url);
-  const embedUrl = `https://www.youtube.com/embed/${id}`;
+  const embedUrl = `https://www.youtube.com/embed/${video.id}`;
   const channelUrl = `https://www.youtube.com/${video.channel}`;
 
   return (
@@ -272,8 +253,8 @@ function VideoPlayer({ video }: { video: Video }) {
           allowfullscreen
         ></iframe>
       </div>
-      <div class="video-info">
-        <h3>
+      <div class="video-info text-center">
+        <h3 class="text-lg mb-2 font-medium">
           <a
             href={video.url}
             class="video-title"

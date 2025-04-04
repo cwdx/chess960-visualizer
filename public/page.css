@@ -1,0 +1,241 @@
+:root {
+  --background-color: #f5f0dd;
+  --text-color: #3c3433;
+  --panel-color: #d7d3c2;
+  --link-color: #8b5a2b;
+  --square-size: clamp(32px, 10vw, 64px);
+  --body-font: "Gelasio", Georgia, "Times New Roman", serif;
+  --mono-font: "Courier Prime", "Courier New", monospace;
+}
+
+body {
+  background-color: var(--background-color);
+  font-family: var(--body-font);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: always;
+  scroll-behavior: smooth;
+}
+
+body:after,
+body:before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.1;
+}
+
+body:after {
+  background: url("/public/seamless2.jpg") repeat 200%;
+}
+
+body:before {
+  background: url("/public/seamless.avif") repeat 200%;
+  opacity: 0.15;
+}
+
+a {
+  color: var(--text-color);
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+@layer base {
+  .fcm {
+    display: inline-block;
+    font: normal normal normal var(--square-size) / 1 ChessMerida;
+    text-rendering: auto;
+    white-space: pre;
+    width: fit-content;
+    height: fit-content;
+    text-align: left;
+  }
+}
+
+mark {
+  background-color: var(--text-color);
+  color: var(--background-color);
+  padding: 2px 4px;
+}
+
+mark.inverted {
+  background-color: var(--panel-color);
+  color: var(--text-color);
+}
+
+.button {
+  font-size: 18px;
+  padding: 10px;
+  border: 1px solid var(--text-color);
+  border-radius: 0;
+  outline: none;
+  appearance: none;
+  color: var(--text-color);
+  text-decoration: none;
+  cursor: pointer;
+  background-color: var(--background-color);
+  display: inline-block;
+  line-height: 1;
+  max-height: 40px;
+}
+
+.button.inverted {
+  background-color: var(--text-color);
+  color: var(--background-color);
+}
+
+pre {
+  font-family: var(--mono-font);
+  background-color: var(--panel-color);
+}
+
+.pre-inverted {
+  background-color: var(--background-color);
+}
+
+input[type="number"] {
+  font: inherit;
+  font-size: 18px;
+  padding: 10px;
+  background-color: var(--panel-color);
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  min-width: 4em;
+  max-height: 40px;
+  line-height: 1;
+  vertical-align: middle;
+  appearance: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.select {
+  position: relative;
+  width: 150px;
+  display: inline-block;
+}
+
+.select:after {
+  content: "0";
+  font-family: "miscel";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.select select {
+  font-size: 18px;
+  padding: 10px;
+  background-color: var(--panel-color);
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  min-width: 4.5em;
+  width: 100%;
+  position: relative;
+  max-height: 40px;
+  appearance: none;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.control-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 10px;
+  padding: 7px;
+  border-bottom: 1px solid var(--text-color);
+  background-color: var(--background-color);
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.nav-buttons.centered {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.video-card {
+  margin-bottom: 1.5rem;
+  background-color: var(--panel-color);
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-info {
+  padding: 16px;
+}
+
+.video-info h3 a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.video-info h3 {
+  margin: 0 0 10px;
+}
+
+.video-info h4 {
+  margin: 0;
+  font-weight: normal;
+  font-size: 1.1rem;
+}
+
+.video-channel {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--link-color);
+}
+
+.panel {
+  background-color: var(--panel-color);
+}
+
+.border {
+  border-color: var(--text-color);
+}
+
+.default-container {
+  max-width: calc((var(--square-size) * 8) + 10px);
+  width: 100%;
+  margin: 0 auto;
+}

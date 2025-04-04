@@ -1,5 +1,5 @@
 export const content = `
-# Chess960 Visualizer
+# About Chess960 Visualizer
 
 This visualizer helps you explore all 960 possible starting positions in Chess960 (also known as Fischer Random Chess), a chess variant where the positions of the main pieces on the first rank are randomized according to specific rules.
 

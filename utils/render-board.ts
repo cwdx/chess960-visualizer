@@ -29,7 +29,7 @@ function renderFen(fen: string) {
 
 type OddEven = [odd: string, even: string];
 
-type Theme = {
+export type Theme = {
   // Black
   k: OddEven;
   q: OddEven;
@@ -68,6 +68,8 @@ const meridaTheme: Theme = {
   "+": ["+", " "],
 };
 
+export type Piece = keyof Theme;
+
 const lucenaTheme: Theme = {
   ...meridaTheme,
   "+": ["+", "  "],
@@ -94,7 +96,11 @@ const utrechtTheme: Theme = {
   "+": ["/", " "],
 };
 
-function applyTheme(renderedFen: string, themeMap: Theme, flipped = true): string {
+function applyTheme(
+  renderedFen: string,
+  themeMap: Theme,
+  flipped = true
+): string {
   try {
     const board = renderedFen.split("\n").map((row) => row.split(""));
     const newBoard: string[][] = [];
@@ -102,10 +108,9 @@ function applyTheme(renderedFen: string, themeMap: Theme, flipped = true): strin
     for (let i = 0; i < board.length; i++) {
       const newRow: string[] = [];
       for (let j = 0; j < board[i].length; j++) {
-        const char = board[i][j] as keyof Theme;
-        const themeChar = themeMap[char];
+        const char = board[i][j] as Piece;
         const isOdd = (i + j) % 2 === 1;
-        newRow.push(isOdd ? themeChar[0] : themeChar[1]);
+        newRow.push(renderPiece(char, themeMap, isOdd ? "dark" : "light"));
       }
       newBoard.push(newRow);
     }
@@ -123,6 +128,16 @@ function applyTheme(renderedFen: string, themeMap: Theme, flipped = true): strin
     console.log("error", e);
     return applyTheme(renderedFen, meridaTheme);
   }
+}
+
+export function renderPiece(
+  piece: Piece,
+  theme: Theme,
+  square: "light" | "dark" = "light"
+) {
+  const isOdd = square === "dark";
+  const [odd, event] = theme[piece];
+  return isOdd ? odd : event;
 }
 
 export const themes = {
